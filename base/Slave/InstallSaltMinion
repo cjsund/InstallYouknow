@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#auto install Salt-minion
+
+NetworkFile="/etc/sysconfig/network"
+HostFile="/etc/hosts"
+Hostname=`hostname`
+MinionConfig="/etc/salt/minion"
+SaltServer=$1
+NewHostname=$2
+
+Install(){
+	yum install -y salt-minion vim
+}
+
+Config(){
+	sed -i "s/$Hostname/$NewHostname/g" $NetworkFile
+	sed -i "s/$Hostname/$NewHostname/g" $HostFile
+	hostname $NewHostname
+	sed -i "s/#master: salt*/master: $SaltServer/g" $MinionConfig 
+	sed -i "s/#id:/id: $NewHostname" $MinionConfig
+}
+
+Install
+Config
